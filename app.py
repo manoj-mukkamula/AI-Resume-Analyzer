@@ -6,25 +6,20 @@ nltk.download('stopwords')
 
 from flask import Flask, render_template, request
 import os
-import PyPDF2
 import uuid
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+import PyPDF2
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-import spacy
-
-
+from nltk.probability import FreqDist
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__)
-
 UPLOAD_FOLDER = 'uploads'
 DATA_FOLDER = 'data'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(DATA_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-nlp = spacy.load('en_core_web_sm')
 
 def extract_text_from_pdf(pdf_path):
     text = ""
@@ -40,8 +35,11 @@ def clean_text(text):
     return ' '.join(words)
 
 def extract_keywords(text):
-    doc = nlp(text.lower())
-    return set([token.text for token in doc if token.is_alpha and not token.is_stop])
+    tokens = word_tokenize(text.lower())
+    words = [word for word in tokens if word.isalpha() and word not in stopwords.words('english')]
+    freq_dist = FreqDist(words)
+    keywords = [word for word, _ in freq_dist.most_common(15)]
+    return set(keywords)
 
 @app.route('/')
 def index():
@@ -49,49 +47,35 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    resume = request.files.get('resume')
-    jd = request.form.get('jobdesc')
+    resume = request.files['resume']
+    jd = request.form['jobdesc']
 
-    if not resume or resume.filename == '':
-        return "No resume uploaded", 400
-    if not jd or jd.strip() == '':
-        return "Job description is empty", 400
-
-    # Save resume PDF with unique name
-    unique_filename = f"{uuid.uuid4().hex}_{resume.filename}"
-    resume_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+    filename = f"{uuid.uuid4().hex}_{resume.filename}"
+    resume_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     resume.save(resume_path)
 
-    # Extract and clean text
     resume_text = extract_text_from_pdf(resume_path)
     resume_clean = clean_text(resume_text)
     jd_clean = clean_text(jd)
 
-    # Save cleaned texts
-    with open(os.path.join(DATA_FOLDER, 'resumetext.txt'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(DATA_FOLDER, 'resumetext.txt'), 'w') as f:
         f.write(resume_clean)
-    with open(os.path.join(DATA_FOLDER, 'jobdesc.txt'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(DATA_FOLDER, 'jobdesc.txt'), 'w') as f:
         f.write(jd_clean)
 
-    # TF-IDF similarity for match %
     vectorizer = TfidfVectorizer()
     vectors = vectorizer.fit_transform([resume_clean, jd_clean])
     score = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
     match_percentage = round(score * 100, 2)
 
-    # Keyword based missing skills
     resume_keywords = extract_keywords(resume_clean)
     jd_keywords = extract_keywords(jd_clean)
-    missing_skills = sorted(list(jd_keywords - resume_keywords))
+    missing_keywords = list(jd_keywords - resume_keywords)
 
     return render_template('result.html',
                            match=match_percentage,
-                           missing=missing_skills[:10],  # show top 10 missing
+                           missing=missing_keywords[:10],
                            tips="Consider adding these missing skills to improve your match.")
-
-@app.route('/result')
-def result():
-    return render_template('result.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
