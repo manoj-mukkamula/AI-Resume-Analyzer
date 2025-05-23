@@ -36,9 +36,15 @@ def clean_text(text):
 
 def extract_keywords(text):
     tokens = word_tokenize(text.lower())
-    words = [word for word in tokens if word.isalpha() and word not in stopwords.words('english')]
+    stop_words = set(stopwords.words('english'))
+    irrelevant_words = set([
+        'required', 'skills', 'location', 'assumed', 'company', 'key', 'tasks', 'note',
+        'responsibilities', 'preferred', 'experience', 'full', 'stack', 'developer',
+        'intellisoft', 'job', 'description'
+    ])
+    words = [word for word in tokens if word.isalpha() and word not in stop_words and word not in irrelevant_words]
     freq_dist = FreqDist(words)
-    keywords = [word for word, _ in freq_dist.most_common(15)]
+    keywords = [word for word, _ in freq_dist.most_common(20)]
     return set(keywords)
 
 @app.route('/')
@@ -72,13 +78,18 @@ def upload():
     jd_keywords = extract_keywords(jd_clean)
     missing_keywords = list(jd_keywords - resume_keywords)
 
+    if missing_keywords:
+        tips = f"Try adding these important technologies or skills: {', '.join(missing_keywords[:5])}."
+    else:
+        tips = "Excellent! Your resume covers all major skills from the job description."
+
     return render_template('result.html',
                            match=match_percentage,
                            missing=missing_keywords[:10],
-                           tips="Consider adding these missing skills to improve your match.")
+                           tips=tips)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port)
 
 
