@@ -6,17 +6,16 @@ nltk.download('stopwords')
 
 import os
 import uuid
+import re
 import PyPDF2
 from flask import Flask, render_template, request
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-from nltk.probability import FreqDist
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Import skills list from skills.py
-from skills import skills_list
-
+# Import skill list
+from skills import software_skills
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -25,28 +24,31 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(DATA_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Convert skills list to lowercase set for fast lookup
-skill_set = set(skill.lower() for skill in skills_list)
+# Clean and normalize text
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9.\s/]', ' ', text)  # keep dot, slash for tech names
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
 
+# Extract skill phrases from text
+def extract_skills_from_text(text, skill_list):
+    found_skills = set()
+    for skill in skill_list:
+        if skill in text:
+            found_skills.add(skill)
+    return found_skills
+
+# Extract text from uploaded PDF resume
 def extract_text_from_pdf(pdf_path):
     text = ""
     with open(pdf_path, 'rb') as f:
         reader = PyPDF2.PdfReader(f)
         for page in reader.pages:
-            text += page.extract_text() or ""
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text
     return text
-
-def clean_text(text):
-    tokens = word_tokenize(text.lower())
-    words = [w for w in tokens if w.isalpha() and w not in stopwords.words('english')]
-    return ' '.join(words)
-
-def extract_keywords(text):
-    tokens = word_tokenize(text.lower())
-    words = [w for w in tokens if w.isalpha() and w in skill_set]
-    freq_dist = FreqDist(words)
-    keywords = [word for word, _ in freq_dist.most_common(15)]
-    return set(keywords)
 
 @app.route('/')
 def index():
@@ -65,25 +67,31 @@ def upload():
     resume_clean = clean_text(resume_text)
     jd_clean = clean_text(jd)
 
-    with open(os.path.join(DATA_FOLDER, 'resumetext.txt'), 'w') as f:
-        f.write(resume_clean)
-    with open(os.path.join(DATA_FOLDER, 'jobdesc.txt'), 'w') as f:
-        f.write(jd_clean)
+    # Extract skills
+    resume_skills = extract_skills_from_text(resume_clean, software_skills)
+    jd_skills = extract_skills_from_text(jd_clean, software_skills)
+    missing_skills = list(jd_skills - resume_skills)
 
+    # Skill match percentage
+    skill_match_percent = round(len(resume_skills.intersection(jd_skills)) / max(len(jd_skills), 1) * 100, 2)
+
+    # TF-IDF calculation
     vectorizer = TfidfVectorizer()
     vectors = vectorizer.fit_transform([resume_clean, jd_clean])
-    score = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
-    match_percentage = round(score * 100, 2)
+    tfidf_score = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
+    tfidf_match = round(tfidf_score * 100, 2)
 
-    resume_keywords = extract_keywords(resume_clean)
-    jd_keywords = extract_keywords(jd_clean)
-    missing_keywords = list(jd_keywords - resume_keywords)
+    # Combined match score (85% skill match, 15% TF-IDF)
+    combined_match = round(skill_match_percent * 0.85 + tfidf_match * 0.15, 2)
 
-    tips = "Consider adding these missing skills to improve your match." if missing_keywords else "Great! No major missing skills detected."
+    # Tips message
+    tips = "Consider adding these missing skills to improve your match." if missing_skills else "Great! No major missing skills detected."
 
     return render_template('result.html',
-                           match=match_percentage,
-                           missing=missing_keywords[:10],
+                           combined_match=combined_match,
+                           skill_match=skill_match_percent,
+                           tfidf_match=tfidf_match,
+                           missing=missing_skills[:10],
                            tips=tips)
 
 if __name__ == '__main__':
