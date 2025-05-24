@@ -4,15 +4,19 @@ nltk.download('punkt_tab')
 nltk.download('punkt')
 nltk.download('stopwords')
 
-from flask import Flask, render_template, request
 import os
 import uuid
 import PyPDF2
+from flask import Flask, render_template, request
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.probability import FreqDist
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
+# Import skills list from skills.py
+from skills import skills_list
+
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -20,6 +24,9 @@ DATA_FOLDER = 'data'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(DATA_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Convert skills list to lowercase set for fast lookup
+skill_set = set(skill.lower() for skill in skills_list)
 
 def extract_text_from_pdf(pdf_path):
     text = ""
@@ -36,15 +43,9 @@ def clean_text(text):
 
 def extract_keywords(text):
     tokens = word_tokenize(text.lower())
-    stop_words = set(stopwords.words('english'))
-    irrelevant_words = set([
-        'required', 'skills', 'location', 'assumed', 'company', 'key', 'tasks', 'note',
-        'responsibilities', 'preferred', 'experience', 'full', 'stack', 'developer',
-        'intellisoft', 'job', 'description'
-    ])
-    words = [word for word in tokens if word.isalpha() and word not in stop_words and word not in irrelevant_words]
+    words = [w for w in tokens if w.isalpha() and w in skill_set]
     freq_dist = FreqDist(words)
-    keywords = [word for word, _ in freq_dist.most_common(20)]
+    keywords = [word for word, _ in freq_dist.most_common(15)]
     return set(keywords)
 
 @app.route('/')
@@ -78,10 +79,7 @@ def upload():
     jd_keywords = extract_keywords(jd_clean)
     missing_keywords = list(jd_keywords - resume_keywords)
 
-    if missing_keywords:
-        tips = f"Try adding these important technologies or skills: {', '.join(missing_keywords[:5])}."
-    else:
-        tips = "Excellent! Your resume covers all major skills from the job description."
+    tips = "Consider adding these missing skills to improve your match." if missing_keywords else "Great! No major missing skills detected."
 
     return render_template('result.html',
                            match=match_percentage,
@@ -90,6 +88,4 @@ def upload():
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
-
-
+    app.run(host='0.0.0.0', port=port, debug=True)

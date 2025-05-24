@@ -3,45 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Analysis Result</title>
+    <title>Analysis Result - AI-Based Resume Analyzer</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
   </head>
-  <body>
-    <div class="container mt-5">
-      <div class="form-container">
-        <h2 class="mb-4 text-center">AI-Based Resume Analysis Result</h2>
+  <body class="bg-light">
+    <div class="container py-5">
+      <h2 class="mb-4 text-center">AI-Based Resume Analysis Result</h2>
 
-        <div class="alert alert-info text-center">
-          <strong>Match Percentage:</strong> {{ match }}%
-        </div>
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+          <div class="card p-4 shadow-sm bg-white rounded">
+            <div class="alert alert-info text-center fs-5">
+              <strong>Match Percentage:</strong> {{ match }}%
+            </div>
 
-        <div class="mb-4">
-          <h4>🔍 Missing/Recommended Skills</h4>
-          {% if missing %}
-          <ul class="list-group">
-            {% for skill in missing %}
-            <li class="list-group-item">{{ skill }}</li>
-            {% endfor %}
-          </ul>
-          {% else %}
-          <p class="text-success">Great! No major missing skills detected.</p>
-          {% endif %}
-        </div>
+            <div class="mb-4">
+              <h4>🔍 Missing/Recommended Skills</h4>
+              {% if missing %}
+              <ul class="list-group">
+                {% for skill in missing %}
+                <li class="list-group-item">{{ skill }}</li>
+                {% endfor %}
+              </ul>
+              {% else %}
+              <p class="text-success fw-semibold">
+                Great! No major missing skills detected.
+              </p>
+              {% endif %}
+            </div>
 
-        <div class="mb-4">
-          <h4>💡 Tips to Improve</h4>
-          <p>{{ tips }}</p>
-        </div>
+            <div class="mb-4">
+              <h4>💡 Tips to Improve</h4>
+              <p>{{ tips }}</p>
+            </div>
 
-        <div class="text-center">
-          <a href="/" class="btn btn-secondary">Analyze Another Resume</a>
+            <a href="/" class="btn btn-secondary w-100"
+              >Analyze Another Resume</a
+            >
+          </div>
         </div>
       </div>
     </div>
