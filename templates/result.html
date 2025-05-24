@@ -11,17 +11,26 @@
   </head>
   <body class="bg-light">
     <div class="container py-5">
-      <h2 class="mb-4 text-center">AI-Based Resume Analysis Result</h2>
+      <div class="text-center mb-5">
+        <h2 class="fw-bold">Resume Analysis Result</h2>
+        <p class="text-muted">
+          Check your skill match with the provided job description
+        </p>
+      </div>
 
       <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
           <div class="card p-4 shadow-sm bg-white rounded">
-            <div class="alert alert-info text-center fs-5">
-              <strong>Match Percentage:</strong> {{ match }}%
+            <div class="alert alert-primary text-center fs-5">
+              <p><strong>Overall Match Score:</strong> {{ combined_match }}%</p>
+              <p><strong>Skill Match:</strong> {{ skill_match }}%</p>
+              <p style="font-size: 0.9rem; color: gray">
+                <small>Overall Text Similarity: {{ tfidf_match }}%</small>
+              </p>
             </div>
 
             <div class="mb-4">
-              <h4>🔍 Missing/Recommended Skills</h4>
+              <h5 class="fw-bold">🔍 Missing/Recommended Skills</h5>
               {% if missing %}
               <ul class="list-group">
                 {% for skill in missing %}
@@ -36,12 +45,12 @@
             </div>
 
             <div class="mb-4">
-              <h4>💡 Tips to Improve</h4>
+              <h5 class="fw-bold">💡 Tips to Improve</h5>
               <p>{{ tips }}</p>
             </div>
 
-            <a href="/" class="btn btn-secondary w-100"
-              >Analyze Another Resume</a
+            <a href="/" class="btn btn-outline-secondary w-100"
+              >🔁 Analyze Another Resume</a
             >
           </div>
         </div>

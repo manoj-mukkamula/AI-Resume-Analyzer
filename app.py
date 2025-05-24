@@ -14,20 +14,17 @@ from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Import skill list
 from skills import software_skills
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
-DATA_FOLDER = 'data'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(DATA_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Clean and normalize text
 def clean_text(text):
     text = text.lower()
-    text = re.sub(r'[^a-z0-9.\s/]', ' ', text)  # keep dot, slash for tech names
+    text = re.sub(r'[^a-z0-9.\s/]', ' ', text)
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
@@ -35,11 +32,11 @@ def clean_text(text):
 def extract_skills_from_text(text, skill_list):
     found_skills = set()
     for skill in skill_list:
-        if skill in text:
+        if re.search(r'\b' + re.escape(skill) + r'\b', text):
             found_skills.add(skill)
     return found_skills
 
-# Extract text from uploaded PDF resume
+# Extract text from PDF
 def extract_text_from_pdf(pdf_path):
     text = ""
     with open(pdf_path, 'rb') as f:
@@ -67,25 +64,34 @@ def upload():
     resume_clean = clean_text(resume_text)
     jd_clean = clean_text(jd)
 
-    # Extract skills
     resume_skills = extract_skills_from_text(resume_clean, software_skills)
     jd_skills = extract_skills_from_text(jd_clean, software_skills)
     missing_skills = list(jd_skills - resume_skills)
 
-    # Skill match percentage
-    skill_match_percent = round(len(resume_skills.intersection(jd_skills)) / max(len(jd_skills), 1) * 100, 2)
+    # 🔍 Debug output
+    print("Resume Skills:", resume_skills)
+    print("JD Skills:", jd_skills)
+    print("Missing Skills:", missing_skills)
 
-    # TF-IDF calculation
+    # Skill match percentage
+    skill_match_percent = round(len(resume_skills & jd_skills) / max(len(jd_skills), 1) * 100, 2)
+
+    # TF-IDF similarity
     vectorizer = TfidfVectorizer()
     vectors = vectorizer.fit_transform([resume_clean, jd_clean])
     tfidf_score = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
     tfidf_match = round(tfidf_score * 100, 2)
 
-    # Combined match score (85% skill match, 15% TF-IDF)
+    # Combined match
     combined_match = round(skill_match_percent * 0.85 + tfidf_match * 0.15, 2)
 
     # Tips message
-    tips = "Consider adding these missing skills to improve your match." if missing_skills else "Great! No major missing skills detected."
+    if not jd_skills:
+        tips = "Job description doesn't contain known technical skills. Please refine it."
+    elif not missing_skills:
+        tips = "Great! No major missing skills detected."
+    else:
+        tips = f"Consider learning or adding these skills: {', '.join(missing_skills[:5])}"
 
     return render_template('result.html',
                            combined_match=combined_match,
