@@ -47,6 +47,7 @@ def extract_text_from_pdf(pdf_path):
                 text += page_text
     return text
 
+# Routes
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -68,24 +69,15 @@ def upload():
     jd_skills = extract_skills_from_text(jd_clean, software_skills)
     missing_skills = list(jd_skills - resume_skills)
 
-    # 🔍 Debug output
-    print("Resume Skills:", resume_skills)
-    print("JD Skills:", jd_skills)
-    print("Missing Skills:", missing_skills)
-
-    # Skill match percentage
     skill_match_percent = round(len(resume_skills & jd_skills) / max(len(jd_skills), 1) * 100, 2)
 
-    # TF-IDF similarity
     vectorizer = TfidfVectorizer()
     vectors = vectorizer.fit_transform([resume_clean, jd_clean])
     tfidf_score = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
     tfidf_match = round(tfidf_score * 100, 2)
 
-    # Combined match
     combined_match = round(skill_match_percent * 0.85 + tfidf_match * 0.15, 2)
 
-    # Tips message
     if not jd_skills:
         tips = "Job description doesn't contain known technical skills. Please refine it."
     elif not missing_skills:
@@ -99,6 +91,14 @@ def upload():
                            tfidf_match=tfidf_match,
                            missing=missing_skills[:10],
                            tips=tips)
+
+@app.route("/sample")
+def sample():
+    return render_template("sample.html")
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
