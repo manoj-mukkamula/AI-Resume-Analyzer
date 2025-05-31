@@ -3,78 +3,45 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sample Resume & Job Description - AI-Based Resume Analyzer</title>
+    <title>Sample Page - AI Resume Analyzer</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
   </head>
   <body class="bg-light">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div class="container">
-        <a class="navbar-brand fw-bold" href="/">Resume Analyzer</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-            <li class="nav-item">
-              <a class="nav-link active" href="/sample">Sample</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/about">About</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Content -->
+    {% include 'navbar.html' %}
     <div class="container py-5">
-      <h2 class="fw-bold mb-4 text-center">Sample Resume & Job Description</h2>
-      <div
-        class="card p-4 shadow-sm bg-white rounded mx-auto"
-        style="max-width: 700px"
-      >
-        <h5>Sample Resume Text:</h5>
+      <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">📄 Sample Job Description</h2>
+        <p class="text-muted">
+          Use this sample JD for testing the resume analyzer
+        </p>
+      </div>
+      <div class="card shadow-sm p-4">
         <pre
           style="
             white-space: pre-wrap;
-            font-family: monospace;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
           "
         >
-John Doe
-Software Engineer with 5 years of experience in Java, Python, and web development.
-Skills: Java, Python, JavaScript, HTML, CSS, Flask, React, SQL.
-        </pre>
+<strong>Job Role:</strong> Software Developer
 
-        <h5 class="mt-4">Sample Job Description:</h5>
-        <pre
-          style="
-            white-space: pre-wrap;
-            font-family: monospace;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-          "
-        >
-We are looking for a Software Engineer with expertise in Java, Python, and React.
-Additional skills: Docker, AWS, CI/CD pipelines.
-Responsibilities include backend API development and cloud deployment.
-        </pre>
+<strong>Required Skills:</strong>
+- Python
+- Flask
+- REST APIs
+- Git & GitHub
+- HTML, CSS, JavaScript
+- SQL or NoSQL databases
+
+<strong>Responsibilities:</strong>
+- Build scalable backend systems using Flask
+- Integrate frontend with RESTful APIs
+- Work in an Agile development team
+- Write clean, maintainable code
+      </pre>
       </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

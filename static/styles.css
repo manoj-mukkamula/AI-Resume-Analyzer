@@ -55,3 +55,39 @@ pre {
     margin: 15px 10px;
   }
 }
+
+.navbar {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link {
+  font-weight: 500;
+  color: #555;
+  transition: color 0.3s ease;
+}
+
+.nav-link.active,
+.nav-link:hover {
+  color: #0d6efd; /* Bootstrap primary blue */
+}
+
+.input-group-text {
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+}
+
+.btn-primary:hover {
+  background-color: #0046d5;
+  border-color: #0046d5;
+  transition: background-color 0.3s ease;
+}
+
+.card h4 {
+  color: #0d6efd;
+}
+
+.list-group-item {
+  font-size: 0.95rem;
+  border: none;
+  background-color: #f8f9fa;
+}

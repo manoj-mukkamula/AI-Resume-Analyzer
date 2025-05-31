@@ -3,65 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>About - AI-Based Resume Analyzer</title>
+    <title>About - AI Resume Analyzer</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
   </head>
   <body class="bg-light">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div class="container">
-        <a class="navbar-brand fw-bold" href="/">Resume Analyzer</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-            <li class="nav-item">
-              <a class="nav-link" href="/sample">Sample</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="/about">About</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Content -->
+    {% include 'navbar.html' %}
     <div class="container py-5">
-      <h2 class="fw-bold mb-4 text-center">About This Project</h2>
-      <div
-        class="card p-4 shadow-sm bg-white rounded mx-auto"
-        style="max-width: 700px"
-      >
+      <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">👨‍💻 About This Project</h2>
+        <p class="text-muted">Mini Project - AI Based Resume Analyzer</p>
+      </div>
+      <div class="card shadow-sm p-4">
         <p>
-          The <strong>AI-Based Resume Analyzer</strong> is a web application
-          designed to help job seekers compare their resumes against job
-          descriptions. It identifies matching skills, missing skills, and
-          provides tips for improvement using natural language processing (NLP)
-          techniques such as TF-IDF and cosine similarity.
+          This is a mini project built using Python, Flask, and basic AI
+          concepts. It compares a resume with a job description and gives:
         </p>
-        <p>
-          This project uses Python, Flask, NLTK, and machine learning concepts
-          for text analysis. The goal is to assist users in tailoring their
-          resumes effectively to increase their chances of landing interviews.
-        </p>
-        <p class="mb-0">
-          Developed by <em>Your Team Name</em> as part of a semester
-          mini-project.
+        <ul>
+          <li>Skill match percentage</li>
+          <li>Text similarity using TF-IDF + Cosine Similarity</li>
+          <li>Missing skills</li>
+          <li>Tips to improve your resume</li>
+        </ul>
+        <p class="mt-3">
+          <strong>Team Members:</strong><br />
+          Manoj, Manisha, Pobeer<br />
+          JNTUH CSE - 2025 Batch
         </p>
       </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
