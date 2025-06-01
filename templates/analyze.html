@@ -65,27 +65,25 @@
               <div class="analyze-card-desc mb-3">
                 Upload your resume PDF or paste the text content for analysis
               </div>
-              <label class="upload-label w-100">
-                <input
-                  type="file"
-                  name="resume"
-                  accept=".pdf"
-                  style="display: none"
-                  id="resumeInput"
-                />
-                <div class="upload-area text-center py-4 mb-2" id="uploadArea">
-                  <i
-                    class="bi bi-cloud-arrow-up"
-                    style="font-size: 2rem; color: #bdbdbd"
-                  ></i>
-                  <div class="mt-2" id="uploadText">
-                    Drag & drop your resume or click to browse
-                  </div>
-                  <div class="upload-hint small text-muted">
-                    PDF files only, max 10MB
-                  </div>
+              <input
+                type="file"
+                name="resume"
+                accept=".pdf"
+                style="display: none"
+                id="resumeInput"
+              />
+              <div class="upload-area text-center py-4 mb-2" id="uploadArea">
+                <i
+                  class="bi bi-cloud-arrow-up"
+                  style="font-size: 2rem; color: #bdbdbd"
+                ></i>
+                <div class="mt-2" id="uploadText">
+                  Drag & drop your resume or click to browse
                 </div>
-              </label>
+                <div class="upload-hint small text-muted">
+                  PDF files only, max 10MB
+                </div>
+              </div>
               <div class="or-divider text-center my-2 text-muted">
                 Or Paste Resume Text
               </div>
@@ -167,22 +165,6 @@
           "jobdesc"
         ).value = `We are seeking a Python Developer with experience in Flask, REST APIs, and cloud deployment. The ideal candidate should have strong skills in Python, Git, SQL, and be familiar with machine learning libraries such as scikit-learn and pandas. Experience with Docker and CI/CD pipelines is a plus.`;
       }
-      // Drag & drop highlight effect for upload area
-      document.querySelectorAll(".upload-label").forEach((label) => {
-        const input = label.querySelector('input[type="file"]');
-        const area = label.querySelector(".upload-area");
-        area.addEventListener("click", () => input.click());
-        area.addEventListener("dragover", (e) => {
-          e.preventDefault();
-          area.classList.add("dragover");
-        });
-        area.addEventListener("dragleave", (e) => {
-          area.classList.remove("dragover");
-        });
-        area.addEventListener("drop", (e) => {
-          area.classList.remove("dragover");
-        });
-      });
 
       // PDF Upload and Extract Text
       const resumeInput = document.getElementById("resumeInput");

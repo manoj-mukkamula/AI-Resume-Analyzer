@@ -3,8 +3,10 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*.env
-*.venv
+
+# Virtual environments
+.env
+.venv
 env/
 venv/
 ENV/
@@ -48,3 +50,10 @@ htmlcov/
 
 # Test output
 test-results/
+
+# Pip
+get-pip.py
+
+# Test/demo scripts
+test_nltk.py
+sample1.py
