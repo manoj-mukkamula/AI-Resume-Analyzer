@@ -155,7 +155,28 @@
         <a href="/analyze" class="btn btn-gradient px-4"
           >Analyze Another Resume</a
         >
-        <a href="#" class="btn btn-cta-outline px-4">Download Report</a>
+        <form action="/download_report" method="post" style="display: inline">
+          <input
+            type="hidden"
+            name="combined_match"
+            value="{{ combined_match }}"
+          />
+          <input type="hidden" name="skill_match" value="{{ skill_match }}" />
+          <input type="hidden" name="tfidf_match" value="{{ tfidf_match }}" />
+          <input
+            type="hidden"
+            name="missing"
+            value="{% for skill in missing %}{{ skill }}, {% endfor %}"
+          />
+          <input
+            type="hidden"
+            name="tips"
+            value="{% for tip in tips %}{{ tip }} | {% endfor %}"
+          />
+          <button type="submit" class="btn btn-cta-outline px-4">
+            Download Report
+          </button>
+        </form>
       </div>
     </div>
 

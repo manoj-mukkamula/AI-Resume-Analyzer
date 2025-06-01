@@ -10,11 +10,15 @@ import os
 import uuid
 import re
 import PyPDF2
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file, render_template_string
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import io
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -123,6 +127,68 @@ def extract_resume_text():
     resume_file.save(resume_path)
     resume_text = extract_text_from_pdf(resume_path)
     return jsonify({'text': resume_text})
+
+@app.route('/download_report', methods=['POST'])
+def download_report():
+    combined_match = request.form.get('combined_match')
+    skill_match = request.form.get('skill_match')
+    tfidf_match = request.form.get('tfidf_match')
+    missing = request.form.get('missing', '')
+    tips = request.form.get('tips', '')
+
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+    y = height - 60
+
+    c.setFont("Helvetica-Bold", 20)
+    c.setFillColor(colors.HexColor("#6c47ff"))
+    c.drawString(72, y, "AI Resume Analyzer Report")
+
+    c.setFont("Helvetica-Bold", 13)
+    y -= 40
+    c.setFillColor(colors.HexColor("#6c47ff"))
+    c.drawString(72, y, f"Overall Resume Match: {combined_match}%")
+    y -= 25
+    c.setFillColor(colors.HexColor("#2563eb"))
+    c.drawString(72, y, f"Skill Match Score: {skill_match}%")
+    y -= 25
+    c.setFillColor(colors.HexColor("#43d39e"))
+    c.drawString(72, y, f"Content Similarity: {tfidf_match}%")
+
+    y -= 35
+    c.setFont("Helvetica-Bold", 12)
+    c.setFillColor(colors.HexColor("#ff9800"))
+    c.drawString(72, y, "Skills to Enhance:")
+    y -= 20
+    c.setFont("Helvetica", 11)
+    for skill in missing.split(','):
+        skill = skill.strip()
+        if skill:
+            c.drawString(90, y, f"- {skill}")
+            y -= 15
+
+    y -= 15
+    c.setFont("Helvetica-Bold", 12)
+    c.setFillColor(colors.HexColor("#3ddad7"))  # Title color for Recommendations
+    c.drawString(72, y, "Recommendations:")
+    y -= 20
+    c.setFont("Helvetica", 11)
+    for tip in tips.split('|'):
+        tip = tip.strip()
+        if tip:
+            c.setFillColor(colors.HexColor("#43d39e"))  # <-- Set color for each recommendation
+            c.drawString(90, y, f"- {tip}")
+            y -= 15
+
+    c.save()
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name='resume_analysis_report.pdf'
+    )
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))

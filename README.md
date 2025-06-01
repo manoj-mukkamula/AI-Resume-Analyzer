@@ -12,6 +12,7 @@ A modern, AI-powered web application that analyzes your resume against a job des
 - **Actionable Recommendations:** Receive AI-generated tips to improve your resume and boost your chances.
 - **Modern, Responsive UI:** Clean, professional design with mobile-friendly layouts.
 - **Sample Resumes & Job Descriptions:** Explore sample data for quick testing.
+- **Downloadable PDF Report:** Download a styled PDF report of your analysis (now powered by ReportLab for cross-platform compatibility).
 
 ---
 
