@@ -2,70 +2,177 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <title>Analysis Results | AI Resume Analyzer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Analysis Result - AI-Based Resume Analyzer</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
     <link
       rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="icon"
+      href="https://img.icons8.com/ios-filled/50/000000/resume.png"
+    />
+    <link
+      rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
     />
   </head>
-  <body class="bg-light">
-    <div class="container py-5">
-      <div class="text-center mb-5">
-        <h2 class="fw-bold text-primary">🎯 Resume Analysis Result</h2>
-        <p class="text-muted">
-          Here’s how your resume matches the job description
-        </p>
+  <body>
+    <!-- Navbar Inclusion -->
+    {% include 'navbar.html' %}
+
+    <!-- Hero Section -->
+    <section class="result-hero-section">
+      <div class="result-hero-icon mx-auto mb-3">
+        <i class="bi bi-bar-chart-line"></i>
+      </div>
+      <h1 class="result-hero-title mb-2">Analysis Results</h1>
+      <div class="result-hero-desc mb-4">
+        Discover how well your resume matches the job description
+      </div>
+    </section>
+
+    <div class="container result-container pb-5">
+      <!-- Overall Resume Match Card -->
+      <div class="result-overall-card mb-4 mx-auto">
+        <div class="d-flex align-items-center mb-2">
+          <span class="result-overall-icon purple me-2"
+            ><i class="bi bi-award"></i
+          ></span>
+          <span class="fw-semibold result-overall-title"
+            >Overall Resume Match</span
+          >
+        </div>
+        <div class="result-overall-desc mb-2">
+          Combined analysis of skills and content similarity
+        </div>
+        <div class="result-overall-score mb-2">
+          <span>{{ combined_match }}%</span>
+        </div>
+        <div class="result-overall-feedback text-danger-emphasis small">
+          {% if combined_match < 50 %}
+          <i class="bi bi-emoji-frown"></i> Great potential! Let's enhance your
+          resume. {% elif combined_match < 80 %}
+          <i class="bi bi-emoji-neutral"></i> Good match, but there's room for
+          improvement. {% else %} <i class="bi bi-emoji-smile"></i> Excellent!
+          Your resume is highly relevant. {% endif %}
+        </div>
       </div>
 
-      <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-          <div class="card p-4 shadow-sm bg-white rounded">
-            <div class="mb-4 text-center">
-              <h4 class="fw-semibold text-success">✅ Overall Match Score</h4>
-              <h2 class="display-5 fw-bold">{{ combined_match }}%</h2>
-              <p class="text-muted">
-                Skill Match: <strong>{{ skill_match }}%</strong>
-              </p>
-              <p class="text-muted">
-                Text Similarity: <strong>{{ tfidf_match }}%</strong>
-              </p>
+      <!-- Skill Match & Content Similarity -->
+      <div class="row g-4 mb-4 justify-content-center">
+        <div class="col-md-6">
+          <div class="result-score-card result-score-blue">
+            <div class="d-flex align-items-center mb-2">
+              <span class="result-score-icon blue me-2"
+                ><i class="bi bi-lightning-charge"></i
+              ></span>
+              <span class="fw-semibold">Skill Match Score</span>
+              <span
+                class="badge bg-light text-primary ms-auto px-3 py-1 small fw-semibold"
+                >Needs Work</span
+              >
             </div>
-
-            <hr />
-
-            <div class="mb-4">
-              <h5 class="fw-bold mb-2">🔍 Missing or Recommended Skills</h5>
-              {% if missing %}
-              <ul class="list-group list-group-flush mb-3">
-                {% for skill in missing %}
-                <li class="list-group-item">
-                  <i class="bi bi-x-circle text-danger me-2"></i>{{ skill }}
-                </li>
-                {% endfor %}
-              </ul>
-              {% else %}
-              <p class="text-success fw-semibold">
-                Great! No major missing skills detected.
-              </p>
-              {% endif %}
+            <div class="result-score-desc mb-2">
+              Skills from job description found in your resume
             </div>
-
-            <div class="mb-4">
-              <h5 class="fw-bold">💡 Tips to Improve</h5>
-              <p class="text-muted">{{ tips }}</p>
+            <div class="result-score-value">{{ skill_match }}%</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="result-score-card result-score-purple">
+            <div class="d-flex align-items-center mb-2">
+              <span class="result-score-icon purple me-2"
+                ><i class="bi bi-graph-up-arrow"></i
+              ></span>
+              <span class="fw-semibold">Content Similarity</span>
+              <span
+                class="badge bg-light text-primary ms-auto px-3 py-1 small fw-semibold"
+                >Moderate</span
+              >
             </div>
-
-            <a href="/" class="btn btn-outline-primary w-100">
-              🔁 Analyze Another Resume
-            </a>
+            <div class="result-score-desc mb-2">
+              Text similarity using advanced NLP analysis
+            </div>
+            <div class="result-score-value">{{ tfidf_match }}%</div>
           </div>
         </div>
       </div>
+
+      <!-- Missing Skills -->
+      <div class="result-missing-card mb-4">
+        <div class="d-flex align-items-center mb-2">
+          <span class="result-missing-icon orange me-2"
+            ><i class="bi bi-exclamation-circle"></i
+          ></span>
+          <span class="fw-semibold">Skills to Enhance</span>
+        </div>
+        <div class="result-missing-desc mb-2">
+          Skills mentioned in the job description but not found in your resume
+        </div>
+        <div>
+          {% if missing %} {% for skill in missing %}
+          <span class="badge result-missing-badge">{{ skill }}</span>
+          {% endfor %} {% else %}
+          <span class="text-success">No missing skills detected!</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="result-tips-card mb-4">
+        <div class="d-flex align-items-center mb-2">
+          <span class="result-tips-icon blue me-2"
+            ><i class="bi bi-stars"></i
+          ></span>
+          <span class="fw-semibold">AI-Powered Recommendations</span>
+        </div>
+        <div class="result-tips-desc mb-2">
+          Actionable tips to enhance your resume and improve your match score
+        </div>
+        <div>
+          {% if tips %}
+          <ul class="result-tips-list">
+            {% for tip in tips %}
+            <li>
+              <i class="bi bi-arrow-right-circle text-primary me-2"></i>{{ tip
+              }}
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <span class="text-muted">No tips to display.</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+        <a href="/analyze" class="btn btn-gradient px-4"
+          >Analyze Another Resume</a
+        >
+        <a href="#" class="btn btn-cta-outline px-4">Download Report</a>
+      </div>
     </div>
+
+    <footer class="footer mt-5">
+      <div class="footer-logo">
+        <img
+          src="https://img.icons8.com/ios-filled/30/6c47ff/resume.png"
+          alt="logo"
+          style="width: 22px; margin-right: 6px"
+        />
+        AI Resume Analyzer
+      </div>
+      <div class="footer-desc">
+        © 2025 AI Resume Analyzer | AAR Mahaveer Engineering College<br />
+        Computer Science & Engineering Department
+      </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

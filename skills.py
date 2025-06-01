@@ -86,3 +86,27 @@ software_skills = [
     "chatgpt", "openai", "ai", "ml", "nlp", "blockchain", "web3", "firebase", 
     "stripe", "paypal integration", "unit testing", "integration testing", "refactoring"
 ]
+
+# Alias map for normalization (key: alias, value: canonical skill)
+alias_map = {
+    "html5": "html",
+    "html4": "html",
+    "html3": "html",
+    "css3": "css",
+    "js": "javascript",
+    "nodejs": "node.js",
+    "expressjs": "express.js",
+    "reactjs": "react",
+    "py": "python",
+    "tf": "tensorflow",
+    "keraslib": "keras",
+    "aws": "amazon web services",
+    "gcp": "google cloud",
+    "nlp": "natural language processing",  # if used elsewhere
+    "rdbms": "sql","html5": "html",
+    "css3": "css",
+    "react.js": "react",
+    "vue.js": "vue",
+    "restful apis": "rest api",
+    # Add more aliases here as needed
+}

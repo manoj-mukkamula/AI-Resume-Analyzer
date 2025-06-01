@@ -8,40 +8,252 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="icon"
+      href="https://img.icons8.com/ios-filled/50/000000/resume.png"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
   </head>
-  <body class="bg-light">
+  <body>
+    <!-- Navbar -->
     {% include 'navbar.html' %}
-    <div class="container py-5">
-      <div class="text-center mb-5">
-        <h2 class="fw-bold text-primary">📄 Sample Job Description</h2>
-        <p class="text-muted">
-          Use this sample JD for testing the resume analyzer
-        </p>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-icon">
+        <img
+          src="https://img.icons8.com/ios-filled/50/ffffff/resume.png"
+          alt="Resume Icon"
+        />
       </div>
-      <div class="card shadow-sm p-4">
-        <pre
-          style="
-            white-space: pre-wrap;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-          "
-        >
-<strong>Job Role:</strong> Software Developer
+      <div class="hero-title">Sample Job Descriptions & Resumes</div>
+      <div class="hero-desc">
+        Use these comprehensive samples to test the resume analyzer
+        functionality and see
+        <br />
+        how it works
+      </div>
+    </section>
 
-<strong>Required Skills:</strong>
-- Python
-- Flask
-- REST APIs
-- Git & GitHub
-- HTML, CSS, JavaScript
-- SQL or NoSQL databases
+    <div class="container my-5" style="max-width: 1100px">
+      <!-- Sample Job Descriptions -->
+      <div class="mb-4">
+        <h4 class="fw-bold mb-3 text-center">Sample Job Descriptions</h4>
+        <div class="row g-4 justify-content-center">
+          <div class="col-md-6">
+            <div class="sample-card sample-card-blue position-relative">
+              <div class="d-flex align-items-center mb-2">
+                <span class="sample-card-icon blue me-2"
+                  ><i class="bi bi-briefcase"></i
+                ></span>
+                <span class="fw-semibold">Software Developer</span>
+                <button
+                  class="btn btn-sm btn-light ms-auto sample-copy-btn"
+                  data-sample="jd1"
+                >
+                  <i class="bi bi-clipboard"></i> Copy
+                </button>
+              </div>
+              <div class="sample-card-desc text-muted mb-2">
+                Comprehensive job description for testing
+              </div>
+              <div class="sample-card-content">
+                <pre class="sample-pre" id="jd1">
+Software Developer Position
 
-<strong>Responsibilities:</strong>
-- Build scalable backend systems using Flask
-- Integrate frontend with RESTful APIs
-- Work in an Agile development team
-- Write clean, maintainable code
-      </pre>
+Required Skills:
+- Python programming (with 2+ years’ experience)
+- Flask & RESTful API development
+- Node.js and frameworks for backend development
+- Relational and NoSQL database experience
+- Git, GitHub, and version control workflows
+- HTML, CSS3, and responsive web design
+</pre
+                >
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="sample-card sample-card-purple position-relative">
+              <div class="d-flex align-items-center mb-2">
+                <span class="sample-card-icon purple me-2"
+                  ><i class="bi bi-bar-chart"></i
+                ></span>
+                <span class="fw-semibold">Data Analyst</span>
+                <button
+                  class="btn btn-sm btn-light ms-auto sample-copy-btn"
+                  data-sample="jd2"
+                >
+                  <i class="bi bi-clipboard"></i> Copy
+                </button>
+              </div>
+              <div class="sample-card-desc text-muted mb-2">
+                Comprehensive job description for testing
+              </div>
+              <div class="sample-card-content">
+                <pre class="sample-pre" id="jd2">
+Data Analyst Position
+
+Required Skills:
+- SQL for database querying and data manipulation
+- Python or R for statistical analysis and data processing
+- Knowledge of advanced spreadsheet functions
+- Data visualization tools (Tableau, PowerBI, Excel or similar)
+- Statistical analysis and hypothesis testing
+- Experience using big data tools (Hadoop, Spark)
+- Machine learning fundamentals
+- Business intelligence and reporting
+</pre
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sample Resumes -->
+      <div class="mb-4">
+        <h4 class="fw-bold mb-3 text-center">Sample Resumes</h4>
+        <div class="row g-4 justify-content-center">
+          <div class="col-md-6">
+            <div class="sample-card sample-card-green position-relative">
+              <div class="d-flex align-items-center mb-2">
+                <span class="sample-card-icon green me-2"
+                  ><i class="bi bi-person-badge"></i
+                ></span>
+                <span class="fw-semibold">Software Developer Resume</span>
+                <button
+                  class="btn btn-sm btn-light ms-auto sample-copy-btn"
+                  data-sample="res1"
+                >
+                  <i class="bi bi-clipboard"></i> Copy
+                </button>
+              </div>
+              <div class="sample-card-desc text-muted mb-2">
+                Professional resume sample for analysis
+              </div>
+              <div class="sample-card-content">
+                <pre class="sample-pre" id="res1">
+John Doe
+Software Developer
+john.doe@email.com | (555) 123-4567 | LinkedIn
+
+SUMMARY:
+Experienced Software Developer with 4+ years of expertise in full-stack web development. Proficient in Python, Flask, JavaScript, and database management. Cloud technology and agile methodologies.
+
+TECHNICAL SKILLS:
+- Programming Languages: Python, JavaScript, Java, SQL
+</pre
+                >
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="sample-card sample-card-cyan position-relative">
+              <div class="d-flex align-items-center mb-2">
+                <span class="sample-card-icon cyan me-2"
+                  ><i class="bi bi-person-badge"></i
+                ></span>
+                <span class="fw-semibold">Data Analyst Resume</span>
+                <button
+                  class="btn btn-sm btn-light ms-auto sample-copy-btn"
+                  data-sample="res2"
+                >
+                  <i class="bi bi-clipboard"></i> Copy
+                </button>
+              </div>
+              <div class="sample-card-desc text-muted mb-2">
+                Professional resume sample for analysis
+              </div>
+              <div class="sample-card-content">
+                <pre class="sample-pre" id="res2">
+Sarah Atkinson
+Data Analyst
+sarah.analyst@email.com | (555) 987-6543 | LinkedIn
+
+SUMMARY:
+Detail-oriented Data Analyst with 3+ years of experience in statistical analysis, data visualization, and business intelligence. Proficient in SQL, Python, and Excel. Adept at transforming complex data into actionable business insights.
+
+TECHNICAL SKILLS:
+- Programming: Python, pandas, numpy, scikit-learn, R, SQL
+</pre
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- How to Use Section -->
+      <div class="sample-howto-card p-4 mb-5">
+        <div class="row">
+          <div class="col-md-6">
+            <h6 class="fw-bold mb-2">For Job Descriptions:</h6>
+            <ol class="mb-0">
+              <li>Click the "Copy" button on any job description above</li>
+              <li>Navigate to the Analyze page</li>
+              <li>Paste the job description in the job description field</li>
+            </ol>
+          </div>
+          <div class="col-md-6">
+            <h6 class="fw-bold mb-2">For Resume Samples:</h6>
+            <ol class="mb-0">
+              <li>Copy any resume sample from above</li>
+              <li>Go to the Analyze page and paste in the resume text field</li>
+              <li>Click "Analyze Resume" to see the matching results</li>
+            </ol>
+          </div>
+        </div>
+        <div class="mt-3 text-primary small">
+          <b>Pro Tip:</b> Try matching the Software Developer resume with the
+          Software Developer job description to see how a well-matched resume
+          performs!
+        </div>
+      </div>
+
+      <div class="text-center mb-5">
+        <a href="/analyze" class="btn btn-gradient px-4 py-2">Go to Analyzer</a>
       </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-logo">
+        <img
+          src="https://img.icons8.com/ios-filled/30/6c47ff/resume.png"
+          alt="logo"
+          style="width: 22px; margin-right: 6px"
+        />
+        AI Resume Analyzer
+      </div>
+      <div class="footer-desc">
+        © 2025 AI Resume Analyzer | AAR Mahaveer Engineering College
+        <br />
+        Computer Science & Engineering Department
+      </div>
+    </footer>
+
+    <script>
+      // Copy sample to clipboard
+      document.querySelectorAll(".sample-copy-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          const sampleId = btn.getAttribute("data-sample");
+          const text = document.getElementById(sampleId).innerText;
+          navigator.clipboard.writeText(text);
+          btn.innerHTML = '<i class="bi bi-clipboard-check"></i> Copied!';
+          setTimeout(() => {
+            btn.innerHTML = '<i class="bi bi-clipboard"></i> Copy';
+          }, 1200);
+        });
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

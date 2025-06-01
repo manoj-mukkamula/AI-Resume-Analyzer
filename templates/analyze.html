@@ -2,124 +2,238 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <title>Analyze Resume | AI Resume Analyzer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AI-Based Resume Analyzer</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
     <link
       rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="icon"
+      href="https://img.icons8.com/ios-filled/50/000000/resume.png"
+    />
+    <link
+      rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
     />
   </head>
-  <body class="bg-light">
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-      <div class="container">
-        <a class="navbar-brand fw-bold" href="/">AI Resume Analyzer</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a
-                class="nav-link {% if request.path == '/' %}active{% endif %}"
-                href="/"
-                >Home</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link {% if request.path == '/sample' %}active{% endif %}"
-                href="/sample"
-                >Sample</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link {% if request.path == '/about' %}active{% endif %}"
-                href="/about"
-                >About</a
-              >
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+  <body>
+    <!-- Navbar -->
+    {% include 'navbar.html' %}
 
-    <!-- Main Content -->
-    <div class="container py-5">
-      <div class="text-center mb-5">
-        <h1 class="fw-bold">AI-Based Resume Analyzer</h1>
-        <p class="text-muted">
-          Upload your resume and compare it with a job description to identify
-          missing skills and improve match.
-        </p>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-icon">
+        <img
+          src="https://img.icons8.com/ios-filled/50/ffffff/resume.png"
+          alt="Resume Icon"
+        />
       </div>
-      <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-          <form
-            action="/analyze"
-            method="POST"
-            enctype="multipart/form-data"
-            class="card p-4 shadow-sm bg-white rounded"
-          >
-            <div class="mb-3">
-              <label for="resume" class="form-label fw-semibold"
-                >Upload Resume (PDF only)</label
-              >
-              <div class="input-group">
-                <span class="input-group-text"
-                  ><i class="bi bi-file-earmark-pdf"></i
-                ></span>
+      <div class="hero-title">AI Resume Analyzer</div>
+      <div class="hero-desc">
+        Upload your resume and compare it with a job description to get
+        intelligent insights<br />
+        and actionable recommendations for improvement.
+      </div>
+    </section>
+
+    <!-- Analysis Form Section -->
+    <section class="analyze-form-section">
+      <form
+        class="analyze-form"
+        action="/upload"
+        method="post"
+        enctype="multipart/form-data"
+        autocomplete="off"
+      >
+        <div class="row justify-content-center g-4">
+          <!-- Resume Upload Card -->
+          <div class="col-md-5">
+            <div class="analyze-card shadow-sm">
+              <div class="analyze-card-header d-flex align-items-center mb-2">
+                <span class="analyze-card-icon blue me-2">
+                  <i class="bi bi-upload"></i>
+                </span>
+                <span class="analyze-card-title fw-semibold"
+                  >Resume Upload</span
+                >
+              </div>
+              <div class="analyze-card-desc mb-3">
+                Upload your resume PDF or paste the text content for analysis
+              </div>
+              <label class="upload-label w-100">
                 <input
                   type="file"
-                  id="resume"
                   name="resume"
-                  class="form-control"
                   accept=".pdf"
-                  required
+                  style="display: none"
+                  id="resumeInput"
                 />
+                <div class="upload-area text-center py-4 mb-2" id="uploadArea">
+                  <i
+                    class="bi bi-cloud-arrow-up"
+                    style="font-size: 2rem; color: #bdbdbd"
+                  ></i>
+                  <div class="mt-2" id="uploadText">
+                    Drag & drop your resume or click to browse
+                  </div>
+                  <div class="upload-hint small text-muted">
+                    PDF files only, max 10MB
+                  </div>
+                </div>
+              </label>
+              <div class="or-divider text-center my-2 text-muted">
+                Or Paste Resume Text
               </div>
+              <textarea
+                name="resume_text"
+                class="form-control"
+                placeholder="Paste your resume content here..."
+                rows="6"
+                id="resumeTextArea"
+              ></textarea>
             </div>
-
-            <div class="mb-3">
-              <label for="job_desc" class="form-label fw-semibold"
-                >Paste Job Description</label
+          </div>
+          <!-- Job Description Card -->
+          <div class="col-md-5">
+            <div class="analyze-card shadow-sm">
+              <div class="analyze-card-header d-flex align-items-center mb-2">
+                <span class="analyze-card-icon purple me-2">
+                  <i class="bi bi-file-earmark-text"></i>
+                </span>
+                <span class="analyze-card-title fw-semibold"
+                  >Job Description</span
+                >
+              </div>
+              <div class="analyze-card-desc mb-3">
+                Paste the job description you want to match against
+              </div>
+              <button
+                type="button"
+                class="sample-btn btn btn-outline-primary btn-sm mb-2"
+                onclick="loadSampleJD()"
               >
-              <div class="input-group">
-                <span class="input-group-text"
-                  ><i class="bi bi-card-text"></i
-                ></span>
-                <textarea
-                  id="job_desc"
-                  name="job_desc"
-                  rows="6"
-                  class="form-control"
-                  placeholder="Paste the job description here..."
-                  required
-                ></textarea>
-              </div>
+                <i class="bi bi-lightning-charge"></i> Load Sample
+              </button>
+              <textarea
+                id="jobdesc"
+                name="jobdesc"
+                class="form-control"
+                placeholder="Paste the job description here..."
+                rows="10"
+                required
+              ></textarea>
             </div>
-
-            <button type="submit" class="btn btn-primary w-100 btn-lg">
-              <i class="bi bi-search"></i> Analyze Resume
-            </button>
-          </form>
+          </div>
         </div>
-      </div>
-    </div>
+        <div class="d-flex justify-content-center gap-3 mt-4">
+          <button type="submit" class="btn btn-gradient px-4">
+            Analyze Resume
+          </button>
+          <button type="reset" class="btn btn-reset px-4">Reset</button>
+        </div>
+        <div class="sample-link-badge mx-auto text-center mt-3">
+          <span class="text-muted">Need more samples?</span>
+          <a href="/sample" class="sample-link-highlight"
+            >Check our sample page</a
+          >
+        </div>
+      </form>
+    </section>
 
+    <!-- Footer -->
+    <footer class="footer mt-5">
+      <div class="footer-logo">
+        <img
+          src="https://img.icons8.com/ios-filled/30/6c47ff/resume.png"
+          alt="logo"
+          style="width: 22px; margin-right: 6px"
+        />
+        AI Resume Analyzer
+      </div>
+      <div class="footer-desc">
+        © 2025 AI Resume Analyzer | AAR Mahaveer Engineering College<br />
+        Computer Science & Engineering Department
+      </div>
+    </footer>
+
+    <script>
+      function loadSampleJD() {
+        document.getElementById(
+          "jobdesc"
+        ).value = `We are seeking a Python Developer with experience in Flask, REST APIs, and cloud deployment. The ideal candidate should have strong skills in Python, Git, SQL, and be familiar with machine learning libraries such as scikit-learn and pandas. Experience with Docker and CI/CD pipelines is a plus.`;
+      }
+      // Drag & drop highlight effect for upload area
+      document.querySelectorAll(".upload-label").forEach((label) => {
+        const input = label.querySelector('input[type="file"]');
+        const area = label.querySelector(".upload-area");
+        area.addEventListener("click", () => input.click());
+        area.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          area.classList.add("dragover");
+        });
+        area.addEventListener("dragleave", (e) => {
+          area.classList.remove("dragover");
+        });
+        area.addEventListener("drop", (e) => {
+          area.classList.remove("dragover");
+        });
+      });
+
+      // PDF Upload and Extract Text
+      const resumeInput = document.getElementById("resumeInput");
+      const resumeTextArea = document.getElementById("resumeTextArea");
+      const uploadArea = document.getElementById("uploadArea");
+      const uploadText = document.getElementById("uploadText");
+
+      uploadArea.addEventListener("click", () => resumeInput.click());
+      uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.classList.add("dragover");
+      });
+      uploadArea.addEventListener("dragleave", () =>
+        uploadArea.classList.remove("dragover")
+      );
+      uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove("dragover");
+        if (e.dataTransfer.files.length) {
+          processResumeFile(e.dataTransfer.files[0]);
+        }
+      });
+      resumeInput.addEventListener("change", function () {
+        if (resumeInput.files.length) {
+          processResumeFile(resumeInput.files[0]);
+          resumeInput.value = ""; // clear so same file triggers again
+        }
+      });
+
+      function processResumeFile(file) {
+        uploadText.innerText = "Uploading...";
+        const formData = new FormData();
+        formData.append("resume", file);
+        fetch("/extract_resume_text", {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.text) {
+              resumeTextArea.value = data.text;
+              uploadText.innerText = "Uploaded: " + file.name;
+            } else {
+              uploadText.innerText = "Failed to extract text.";
+            }
+          })
+          .catch(() => {
+            uploadText.innerText = "Failed to upload.";
+          });
+      }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

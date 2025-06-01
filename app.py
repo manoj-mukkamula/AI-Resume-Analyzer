@@ -4,17 +4,17 @@ nltk.download('punkt_tab')
 nltk.download('punkt')
 nltk.download('stopwords')
 
+from suggestions import skill_tips
+from skills import software_skills, alias_map
 import os
 import uuid
 import re
 import PyPDF2
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-
-from skills import software_skills
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -58,14 +58,20 @@ def analyze():
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    resume = request.files['resume']
+    resume_file = request.files.get('resume')
+    resume_text_input = request.form.get('resume_text', '').strip()
     jd = request.form['jobdesc']
 
-    filename = f"{uuid.uuid4().hex}_{resume.filename}"
-    resume_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    resume.save(resume_path)
+    if resume_file and resume_file.filename:
+        filename = f"{uuid.uuid4().hex}_{resume_file.filename}"
+        resume_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        resume_file.save(resume_path)
+        resume_text = extract_text_from_pdf(resume_path)
+    elif resume_text_input:
+        resume_text = resume_text_input
+    else:
+        return "Please upload a resume PDF or paste resume text.", 400
 
-    resume_text = extract_text_from_pdf(resume_path)
     resume_clean = clean_text(resume_text)
     jd_clean = clean_text(jd)
 
@@ -83,11 +89,14 @@ def upload():
     combined_match = round(skill_match_percent * 0.85 + tfidf_match * 0.15, 2)
 
     if not jd_skills:
-        tips = "Job description doesn't contain known technical skills. Please refine it."
+        tips = ["Job description doesn't contain known technical skills. Please refine it."]
     elif not missing_skills:
-        tips = "Great! No major missing skills detected."
+        tips = ["Great! No major missing skills detected."]
     else:
-        tips = f"Consider learning or adding these skills: {', '.join(missing_skills[:5])}"
+        tips = []
+        for skill in missing_skills[:10]:
+            tip = skill_tips.get(skill.lower(), f"Consider improving your {skill} skills.")
+            tips.append(f"{skill.title()}: {tip}")
 
     return render_template('result.html',
                            combined_match=combined_match,
@@ -103,6 +112,17 @@ def sample():
 @app.route("/about")
 def about():
     return render_template("about.html")
+
+@app.route('/extract_resume_text', methods=['POST'])
+def extract_resume_text():
+    resume_file = request.files.get('resume')
+    if not resume_file or not resume_file.filename:
+        return jsonify({'error': 'No file uploaded'}), 400
+    filename = f"{uuid.uuid4().hex}_{resume_file.filename}"
+    resume_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    resume_file.save(resume_path)
+    resume_text = extract_text_from_pdf(resume_path)
+    return jsonify({'text': resume_text})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
