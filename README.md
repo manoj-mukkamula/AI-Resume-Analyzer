@@ -19,8 +19,7 @@ A modern, AI-powered web application that analyzes your resume against a job des
 ## 🖥️ Live Demo
 
 > **Deployed on Render:**  
-> [https://your-render-url.onrender.com](https://your-render-url.onrender.com)  
-> _(Replace with your actual Render URL)_
+> [https://your-render-url.onrender.com](https://your-render-url.onrender.com](https://ai-resume-analyzer-sahw.onrender.com/)  
 
 ---
 
